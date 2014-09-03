@@ -9,6 +9,7 @@ ClassMethod Test1()
 	set operation.Adapter.HTTPServer = "localhost"
 	set operation.Adapter.HTTPPort = "10101"
 	set operation.Adapter.Credentials = "Default_System"
+
 	set json = ##class(%ZEN.proxyObject).%New()
 	set json.scenario = "Test HealthShare"
 	set json.recipients = ##class(%ListOfObjects).%New()
@@ -23,11 +24,12 @@ ClassMethod Test1()
 	set cb.url = "http://exchange.healthshare.us:9999/xmatters/status"
 	set cb.type = "status"
 	do json.callbacks.Insert(cb)
+
 	set request = ##class(EnsUtils.HTTP.Utils).CreateHTTPRequestWithJSONBody( json )
 	do request.HTTPHeaders.SetAt("POST","httprequest")
 	do request.HTTPHeaders.SetAt("application/json","content-type")
 	write !,"Request Headers",!,"---------------",!
-	do ##class(EnsUtils.HTTP.Utils).OutputArrayOfDataTypesToDevice( request.HTTPHeaders )
+	do ##class(EnsUtils.Console).Dir( request.HTTPHeaders )
 	write !
 	write "Request Body",!,"------------",!
 	while ( 'request.Stream.AtEnd ) {
@@ -38,7 +40,7 @@ ClassMethod Test1()
 
 	set sc = operation.OnMessage(request,.response)
 	write !,"Response Headers",!,"---------------",!
-	do ##class(EnsUtils.HTTP.Utils).OutputArrayOfDataTypesToDevice( request.HTTPHeaders )
+	do ##class(EnsUtils.Console).Dir( request.HTTPHeaders )
 	write !
 	write "Response Body",!,"------------",!
 	while ( 'response.Stream.AtEnd ) {
